@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1 Deliverables — Healthcare Claims Denial Prediction</title>
+<style>
+  :root {
+    --bg: #fafaf9;
+    --card: #ffffff;
+    --border: #e5e5e5;
+    --accent: #d4a843;
+    --accent-light: #fdf6e3;
+    --green: #16a34a;
+    --green-light: #dcfce7;
+    --red: #dc2626;
+    --red-light: #fee2e2;
+    --blue: #2563eb;
+    --blue-light: #dbeafe;
+    --gray: #6b7280;
+    --dark: #1f2937;
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--dark);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+  h1 span { color: var(--accent); }
+
+  .subtitle { color: var(--gray); font-size: 1rem; margin-bottom: 48px; }
+
+  h2 {
+    font-size: 1.4rem; font-weight: 700; margin-bottom: 24px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  h2 .num {
+    background: var(--accent); color: white; width: 32px; height: 32px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+
+  section { margin-bottom: 56px; }
+
+  /* Charter */
+  .charter-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+  }
+  .charter-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .charter-card h3 { font-size: 0.85rem; color: var(--gray); text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 8px; font-weight: 600; }
+  .charter-card p { font-size: 0.95rem; color: var(--dark); line-height: 1.5; }
+  .charter-card.full { grid-column: 1 / -1; }
+  .charter-card code { font-family: var(--mono); font-size: 0.85rem;
+    background: #f3f4f6; padding: 1px 5px; border-radius: 3px; }
+
+  /* Research question + success criterion */
+  .highlight-box {
+    background: var(--accent-light); border: 2px solid var(--accent);
+    border-radius: 10px; padding: 20px 24px; margin-bottom: 16px;
+  }
+  .highlight-box p { font-size: 1rem; line-height: 1.6; color: var(--dark); }
+  .highlight-box .label { font-size: 0.8rem; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+
+  .success-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .success-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px;
+  }
+  .success-card .metric { font-size: 1.6rem; font-weight: 700; color: var(--dark); }
+  .success-card .metric-label { font-size: 0.85rem; color: var(--gray); margin-top: 4px; }
+  .success-card .metric-note { font-size: 0.85rem; color: var(--gray); margin-top: 8px; line-height: 1.4; }
+
+  /* Workflow */
+  .workflow {
+    display: flex; flex-direction: column; align-items: center; gap: 0;
+    padding: 32px 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .flow-node {
+    padding: 14px 28px; border-radius: 10px; font-weight: 600;
+    font-size: 0.95rem; text-align: center; min-width: 300px;
+  }
+  .flow-node.frozen { background: var(--blue-light); border: 2px solid var(--blue); color: var(--blue); }
+  .flow-node.editable { background: var(--accent-light); border: 2px solid var(--accent); color: #92400e; }
+  .flow-node.keep { background: var(--green-light); border: 2px solid var(--green); color: var(--green); }
+  .flow-node.discard { background: var(--red-light); border: 2px solid var(--red); color: var(--red); }
+  .flow-node.log { background: #f3f4f6; border: 2px solid var(--gray); color: var(--gray); }
+
+  .flow-arrow { width: 2px; height: 28px; background: var(--dark); position: relative; }
+  .flow-arrow::after {
+    content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 6px solid transparent;
+    border-right: 6px solid transparent; border-top: 8px solid var(--dark);
+  }
+  .flow-arrow.short { height: 16px; }
+
+  .decision-box {
+    background: var(--card); border: 2px solid var(--dark); border-radius: 8px;
+    padding: 12px 24px; font-weight: 700; font-size: 0.95rem; text-align: center;
+  }
+
+  .branch-connector {
+    display: flex; align-items: flex-start; gap: 0; position: relative; margin-top: -1px;
+  }
+  .branch-connector::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: calc(100% - 80px); height: 2px; background: var(--dark);
+  }
+  .branch-arm { display: flex; flex-direction: column; align-items: center; width: 180px; }
+  .branch-arm .flow-arrow { height: 20px; }
+  .branch-label {
+    font-size: 0.85rem; font-weight: 700; padding: 4px 12px;
+    border-radius: 4px; margin-bottom: 4px;
+  }
+  .branch-label.yes { background: var(--green-light); color: var(--green); }
+  .branch-label.no { background: var(--red-light); color: var(--red); }
+
+  .file-tag {
+    display: inline-block; background: #f3f4f6; border: 1px solid var(--border);
+    border-radius: 4px; padding: 1px 6px; font-family: var(--mono);
+    font-size: 0.8rem; font-weight: 400; color: var(--gray);
+  }
+
+  .legend { display: flex; gap: 20px; margin-top: 20px; justify-content: center; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--gray); }
+  .legend-dot { width: 14px; height: 14px; border-radius: 4px; border: 2px solid; }
+
+  /* Risk table */
+  table { width: 100%; border-collapse: collapse; background: var(--card);
+    border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  thead th { background: var(--dark); color: white; padding: 12px 16px;
+    text-align: left; font-size: 0.9rem; font-weight: 600; }
+  tbody td { padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 0.9rem; vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:nth-child(even) { background: #f9fafb; }
+  .severity { display: inline-block; padding: 2px 10px; border-radius: 12px;
+    font-size: 0.8rem; font-weight: 600; }
+  .severity.high { background: var(--red-light); color: var(--red); }
+  .severity.medium { background: #fef3c7; color: #92400e; }
+  .severity.low { background: var(--green-light); color: var(--green); }
+
+  /* Repo tree */
+  .repo-tree {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 28px 32px; font-family: var(--mono); font-size: 0.9rem; line-height: 1.8;
+  }
+  .tree-line { display: flex; gap: 12px; align-items: baseline; }
+  .tree-prefix { color: var(--gray); user-select: none; }
+  .tree-file { font-weight: 600; }
+  .tree-file.frozen { color: var(--blue); }
+  .tree-file.editable { color: #b45309; }
+  .tree-file.generated { color: var(--gray); font-style: italic; }
+  .tree-file.meta { color: var(--dark); }
+  .tree-desc { font-family: var(--font); font-size: 0.85rem; color: var(--gray); font-weight: 400; }
+  .tree-badge {
+    display: inline-block; padding: 1px 8px; border-radius: 4px;
+    font-family: var(--font); font-size: 0.75rem; font-weight: 700; margin-left: 4px;
+  }
+  .tree-badge.frozen { background: var(--blue-light); color: var(--blue); }
+  .tree-badge.editable { background: var(--accent-light); color: #92400e; }
+  .tree-badge.gen { background: #f3f4f6; color: var(--gray); }
+  .tree-badge.local { background: #f3f4f6; color: var(--gray); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>Week 1 Deliverables — <span>Healthcare Claims Denial Prediction</span></h1>
+<p class="subtitle">Binary Classification | STAT 390 Capstone | Agent modifies <code>train.py</code> to maximize F2 score on denied claims</p>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">1</span> Project Charter</h2>
+
+<div class="charter-grid">
+  <div class="charter-card full">
+    <h3>The Problem</h3>
+    <p>Healthcare providers submit millions of insurance claims every year and a significant portion come back denied due to coding mismatches, missing authorizations, or eligibility issues. Billing teams must then manually correct and resubmit each one, a process that is slow, expensive, and sometimes never completed. Denial rates commonly run between 10 and 15 percent of all claims, representing millions of dollars in delayed or lost reimbursements. This project builds an autonomous ML pipeline that predicts which claims are likely to be denied <em>before</em> they are ever submitted, so billing teams can fix errors upfront.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>What the Agent Optimizes</h3>
+    <p>F2 score on the denied class, measured on the validation set after each experiment. F2 weights recall more heavily than precision, reflecting the real cost asymmetry where a missed denial is far more damaging than a false alarm.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>Data Source</h3>
+    <p>Kaggle synthetic healthcare claims dataset. Contains individual claim-level records with procedure codes, diagnosis codes, payer type, claim amount, and a <code>denial_status</code> column (Paid / Denied / Partially Paid) as the binary target variable.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>Editable File</h3>
+    <p><code>train.py</code> — the full modeling pipeline including feature encoding, model selection, class imbalance handling, and decision threshold. The only file the agent may touch.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>Frozen Files</h3>
+    <p><code>prepare.py</code> — data loading, deterministic 70/15/15 split with fixed seed, F2 evaluation function. <code>run.py</code> — experiment runner and logger. Neither file may be modified by the agent under any circumstances.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>Baseline</h3>
+    <p>Logistic regression on payer type, claim amount, and frequency-encoded procedure code. Establishes the floor F2 score every agent experiment must beat before being committed to git.</p>
+  </div>
+
+  <div class="charter-card">
+    <h3>Minimum Viable Project</h3>
+    <p>A reproducible AutoResearch loop completing at least 30 experiments with a clean keep/discard log, and a final model that outperforms the logistic regression baseline on F2 score on the validation set.</p>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">2</span> Research Question</h2>
+
+<div class="highlight-box">
+  <div class="label">One Clear Research Question</div>
+  <p>Can an autonomous ML agent, operating within the AutoResearch ratchet loop, discover a claims classification model that predicts insurance denial before submission with an F2 score above 0.70 on held-out test data?</p>
+</div>
+
+<p style="font-size:0.9rem; color:var(--gray);">This question is evaluable (single numeric threshold), bounded (one dataset, binary classification), reproducible (deterministic split, full experiment log), and answerable within 8 weeks.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">3</span> Success Criterion</h2>
+
+<div class="success-grid">
+  <div class="success-card">
+    <div class="metric">F2 &gt; 0.70</div>
+    <div class="metric-label">Primary metric on locked test set</div>
+    <div class="metric-note">F2 weights recall 2x over precision. Chosen because missing a denial costs more than a false alarm.</div>
+  </div>
+  <div class="success-card">
+    <div class="metric">Recall &gt; 75%</div>
+    <div class="metric-label">On denied class in test set</div>
+    <div class="metric-note">The model must correctly flag at least 3 in 4 claims that would truly be denied. Below this the billing team sees no meaningful reduction in denial rate.</div>
+  </div>
+</div>
+
+<div style="margin-top:16px; padding:14px 18px; background:#f3f4f6; border-radius:8px; font-size:0.9rem; color:var(--gray);">
+  <strong style="color:var(--dark);">Secondary criterion:</strong> A rigorous, reproducible pipeline with a complete experiment log and honest failure analysis also constitutes a successful project per course policy, even if the F2 threshold is not met.
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">4</span> AutoResearch Workflow Diagram</h2>
+
+<div class="workflow">
+
+  <div class="flow-node frozen" style="background:#f0fdf4; border-color:#16a34a; color:#15803d;">
+    <strong>Human Setup (once)</strong><br>
+    <span style="font-weight:400; font-size:0.85rem;">Download data &rarr; run <code>prepare.py</code> &rarr; lock test set &rarr; write <code>program.md</code></span>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <div class="flow-node editable">
+    <strong>1. Agent reads &amp; modifies</strong> <span class="file-tag">train.py</span><br>
+    <span style="font-weight:400; font-size:0.85rem;">e.g. try target encoding for CPT codes, add SMOTE, switch to XGBoost</span>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <div class="flow-node frozen">
+    <strong>2. Run experiment</strong><br>
+    <code style="font-size:0.85rem;">python run.py "description"</code><br>
+    <span style="font-weight:400; font-size:0.85rem;">
+      Loads data <span class="file-tag">prepare.py</span> &rarr;
+      Trains model <span class="file-tag">train.py</span> &rarr;
+      Evaluates F2 on validation set
+    </span>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <div class="flow-node log">
+    <strong>3. Log result</strong> &rarr; <span class="file-tag">results.tsv</span><br>
+    <span style="font-weight:400; font-size:0.85rem;">experiment ID, F2 score, status, description</span>
+  </div>
+
+  <div class="flow-arrow"></div>
+
+  <div class="decision-box">4. F2 &gt; current best?</div>
+
+  <div style="height:8px;"></div>
+
+  <div class="branch-connector">
+    <div class="branch-arm">
+      <div class="flow-arrow short"></div>
+      <div class="branch-label yes">YES — improved</div>
+      <div class="flow-arrow short"></div>
+      <div class="flow-node keep" style="min-width:160px; padding:10px 16px; font-size:0.85rem;">
+        <strong>KEEP</strong><br>Update best<br><code>git commit</code>
+      </div>
+    </div>
+    <div class="branch-arm">
+      <div class="flow-arrow short"></div>
+      <div class="branch-label no">NO — regressed</div>
+      <div class="flow-arrow short"></div>
+      <div class="flow-node discard" style="min-width:160px; padding:10px 16px; font-size:0.85rem;">
+        <strong>DISCARD</strong><br>Revert train.py<br><code>git checkout train.py</code>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:12px;"></div>
+
+  <div class="flow-node editable" style="min-width:200px; padding:10px 20px;">
+    <strong>5. Repeat from step 1</strong><br>
+    <span style="font-weight:400; font-size:0.85rem;">~80–100 experiments overnight</span>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--blue-light); border-color:var(--blue);"></div>
+      Frozen (agent cannot modify)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--accent-light); border-color:var(--accent);"></div>
+      Editable (agent modifies)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--green-light); border-color:var(--green);"></div>
+      Keep (improved)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:var(--red-light); border-color:var(--red);"></div>
+      Discard (regressed)
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">5</span> Risk List</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:4%">#</th>
+      <th style="width:26%">Risk</th>
+      <th style="width:9%">Severity</th>
+      <th style="width:32%">Mitigation</th>
+      <th style="width:29%">How to Detect</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><strong>Agent modifies frozen files</strong><br>Agent edits <code>prepare.py</code> or <code>run.py</code>, making experiments incomparable</td>
+      <td><span class="severity high">High</span></td>
+      <td>Explicit rule in <code>program.md</code>: never touch <code>prepare.py</code> or <code>run.py</code>. Only <code>train.py</code> is listed as editable.</td>
+      <td><code>git diff --name-only</code> after each run — only <code>train.py</code> should appear</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><strong>Severe class imbalance stalls improvement</strong><br>If denials are under 10% the agent may fail to improve recall meaningfully and F2 stagnates</td>
+      <td><span class="severity high">High</span></td>
+      <td>Check denial rate in week 2 exploratory analysis. Set class weights explicitly in baseline. Add SMOTE as a directed early experiment in <code>program.md</code>.</td>
+      <td>F2 score below 0.30 after 10 experiments with no upward trend</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><strong>High cardinality encoding explodes feature space</strong><br>Naive one-hot encoding of CPT and ICD-10 codes causes training to crash or produce noise</td>
+      <td><span class="severity high">High</span></td>
+      <td>Set frequency encoding as default in <code>train.py</code> before loop begins. List target encoding and category grouping as directed alternatives in <code>program.md</code>.</td>
+      <td>MemoryError or training time exceeding budget on first few experiments</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><strong>Metric is non-reproducible</strong><br>Random seed not fixed — same model gives different F2 on different runs</td>
+      <td><span class="severity medium">Medium</span></td>
+      <td><code>RANDOM_SEED = 42</code> frozen in <code>prepare.py</code>. Deterministic split. All models use <code>random_state=42</code>.</td>
+      <td>Run the same <code>train.py</code> twice — F2 should be identical both times</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><strong>Scope creep from denial reason column</strong><br>Temptation to switch to multi-class mid-project destabilizes the research loop</td>
+      <td><span class="severity medium">Medium</span></td>
+      <td>Denial reason is explicitly excluded from <code>program.md</code> as a target. Binary denied vs paid only. Multi-class is a stretch goal for week 6 only.</td>
+      <td>Agent attempts to use denial reason as a target variable in <code>train.py</code></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><strong>Synthetic data patterns do not generalize</strong><br>Findings on Kaggle data may not transfer to real claims from actual health systems</td>
+      <td><span class="severity low">Low</span></td>
+      <td>CMS Medicare data used as secondary validation in week 6 to cross-check whether key features align with real payment patterns.</td>
+      <td>Features important on Kaggle show no signal in CMS payment gap analysis</td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<section>
+<h2><span class="num">6</span> Project Repository Structure</h2>
+
+<div class="repo-tree">
+
+  <div class="tree-line">
+    <span class="tree-prefix">insurance_autoresearch/</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file frozen">prepare.py</span>
+    <span class="tree-badge frozen">FROZEN</span>
+    <span class="tree-desc">&mdash; Data loading, 70/15/15 deterministic split, F2 evaluation function, test set lock</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file editable">train.py</span>
+    <span class="tree-badge editable">EDITABLE</span>
+    <span class="tree-desc">&mdash; Full modeling pipeline. <strong>The only file the agent may modify.</strong></span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file frozen">run.py</span>
+    <span class="tree-badge frozen">FROZEN</span>
+    <span class="tree-desc">&mdash; Experiment runner: train &rarr; evaluate F2 &rarr; compare &rarr; log to results.tsv</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">program.md</span>
+    <span class="tree-desc">&mdash; Agent research agenda: what to optimize, what to try, what is forbidden</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">README.md</span>
+    <span class="tree-desc">&mdash; One-sentence problem, data source, metric, current best F2, setup instructions</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">research_log.md</span>
+    <span class="tree-desc">&mdash; Dated weekly notes on agent behavior, decisions, and next steps</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">failure_log.md</span>
+    <span class="tree-desc">&mdash; Crashed experiments, misleading improvements, and lessons learned</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">requirements.txt</span>
+    <span class="tree-desc">&mdash; Pinned Python dependencies for full reproducibility</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file meta">.gitignore</span>
+    <span class="tree-desc">&mdash; Excludes data/, results.tsv, performance.png, __pycache__</span>
+  </div>
+
+  <div class="tree-line" style="margin-top:12px; padding-top:12px; border-top:1px dashed var(--border);">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file generated">results.tsv</span>
+    <span class="tree-badge gen">GENERATED</span>
+    <span class="tree-desc">&mdash; Experiment log auto-appended by run.py — one row per trial</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9507;&#9473;&#9473;</span>
+    <span class="tree-file generated">performance.png</span>
+    <span class="tree-badge gen">GENERATED</span>
+    <span class="tree-desc">&mdash; F2 score trajectory plot over iterations</span>
+  </div>
+
+  <div class="tree-line">
+    <span class="tree-prefix">&#9495;&#9473;&#9473;</span>
+    <span class="tree-file generated">data/</span>
+    <span class="tree-badge local">LOCAL ONLY</span>
+    <span class="tree-desc">&mdash; Raw Kaggle claims CSV — never pushed to GitHub</span>
+  </div>
+
+</div>
+
+<div style="margin-top:20px; padding:16px 20px; background:var(--accent-light); border:1px solid var(--accent); border-radius:8px; font-size:0.9rem;">
+  <strong>Boundary principle:</strong> Everything the agent can change is in
+  <span class="tree-badge editable" style="vertical-align:middle;">EDITABLE</span> (only <code>train.py</code>).
+  Everything that measures success is in
+  <span class="tree-badge frozen" style="vertical-align:middle;">FROZEN</span>.
+  This separation is what makes every experiment comparable and the research loop trustworthy.
+</div>
+
+</section>
+
+</div>
+</body>
+</html>
