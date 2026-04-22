@@ -1,17 +1,43 @@
 """
-EDITABLE -- The agent modifies this file.
-Define the model pipeline for California Housing regression.
-The function build_model() must return an sklearn-compatible estimator.
+EDITABLE -- This is the only file the agent may modify.
+Baseline: Logistic Regression on claims features.
 """
-from sklearn.ensemble import HistGradientBoostingRegressor
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
 
-
 def build_model():
-    """Return an sklearn Pipeline. This is what the agent improves."""
-    return Pipeline([
-        ("model", HistGradientBoostingRegressor(
-            max_iter=300, max_depth=8, learning_rate=0.08,
-            min_samples_leaf=20, random_state=42,
-        )),
+    """
+    Returns a trained sklearn pipeline.
+    Must expose a .predict(X) method.
+    Agent may change anything in this file.
+    """
+    model = Pipeline([
+        ("scaler", StandardScaler()),
+        ("classifier", LogisticRegression(
+            class_weight="balanced",
+            random_state=42,
+            max_iter=1000
+        ))
     ])
+    return model
+
+def preprocess(X):
+    """
+    Feature engineering and encoding.
+    Agent may modify this function.
+    """
+    X = X.copy()
+
+    # Encode categorical columns with frequency encoding
+    for col in ["Procedure Code", "Diagnosis Code", "Insurance Type", "Follow-up Required"]:
+        if col in X.columns:
+            freq = X[col].value_counts() / len(X)
+            X[col] = X[col].map(freq).fillna(0)
+
+    # Drop date column for now
+    if "Date of Service" in X.columns:
+        X = X.drop(columns=["Date of Service"])
+
+    return X

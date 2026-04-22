@@ -1,10 +1,11 @@
 """
+FROZEN -- Do not modify this file.
 Run one experiment: build model, train, evaluate, log result.
 
 Usage:
-    python run.py "description"              # logs as status=keep
-    python run.py "description" --baseline   # logs as status=baseline
-    python run.py "description" --discard    # logs as status=discard
+    python run.py "description"             # logs as status=keep
+    python run.py "description" --baseline  # logs as status=baseline
+    python run.py "description" --discard   # logs as status=discard
 """
 import sys
 import time
@@ -12,14 +13,14 @@ import subprocess
 from prepare import load_data, evaluate, log_result
 
 
-def get_git_hash():
+def get_experiment_id():
     try:
         return subprocess.check_output(
             ["git", "rev-parse", "--short", "HEAD"],
             stderr=subprocess.DEVNULL,
         ).decode().strip()
     except Exception:
-        return "no-git"
+        return str(int(time.time()))
 
 
 def main():
@@ -36,28 +37,32 @@ def main():
     description = " ".join(description_parts) if description_parts else "experiment"
 
     # 1. Load data (frozen)
-    X_train, y_train, X_val, y_val, feature_names = load_data()
-    print(f"Data: {X_train.shape[0]} train, {X_val.shape[0]} val, {len(feature_names)} features")
+    X_train, y_train, X_val, y_val, X_test, y_test = load_data()
 
-    # 2. Build model (editable)
-    from model import build_model
+    # 2. Import model and preprocessor from train.py (editable)
+    from train import build_model, preprocess
+
+    # 3. Preprocess
+    X_train_processed = preprocess(X_train)
+    X_val_processed = preprocess(X_val)
+
+    # 4. Build and train model
     model = build_model()
     print(f"Model: {model}")
-
-    # 3. Train
     t0 = time.time()
-    model.fit(X_train, y_train)
-    train_time = time.time() - t0
-    print(f"Training time: {train_time:.2f}s")
+    model.fit(X_train_processed, y_train)
+    runtime = time.time() - t0
+    print(f"Training time: {runtime:.2f}s")
 
-    # 4. Evaluate (frozen metric)
-    val_rmse, val_r2 = evaluate(model, X_val, y_val)
-    print(f"val_rmse: {val_rmse:.6f}")
-    print(f"val_r2:   {val_r2:.6f}")
+    # 5. Evaluate (frozen metric)
+    val_f2, val_recall, val_precision = evaluate(model, X_val_processed, y_val)
+    print(f"val_f2:        {val_f2:.6f}")
+    print(f"val_recall:    {val_recall:.6f}")
+    print(f"val_precision: {val_precision:.6f}")
 
-    # 5. Log
-    commit = get_git_hash()
-    log_result(commit, val_rmse, val_r2, status, description)
+    # 6. Log result
+    experiment_id = get_experiment_id()
+    log_result(experiment_id, val_f2, val_recall, val_precision, status, description, runtime)
     print(f"Result logged to results.tsv (status={status})")
 
 
