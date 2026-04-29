@@ -11,7 +11,7 @@ Can an autonomous ML agent predict which insurance claims will be denied before 
 **Metric:** F2 score on the denied class (weights recall 2x over precision)
 **Data:** Kaggle synthetic healthcare claims dataset (1000 claims, 15 columns)
 **Target variable:** Outcome — Denied or Partially Paid = 1, Paid = 0
-**Current best F2:** 0.613306 (baseline: logistic regression)
+**Current best F2:** 0.9015 (exp5: RF+ExtraTrees ensemble, auto-threshold, ratio features)
 
 ---
 
@@ -61,11 +61,16 @@ One command returns a single F2 score. Runtime is approximately 0.01 seconds per
 | # | Description | F2 Score | Recall | Decision |
 |---|-------------|----------|--------|----------|
 | 0 | baseline: logistic regression | 0.6133 | 0.6082 | baseline |
+| 1 | Random Forest 300 trees balanced | 0.7256 | 0.7530 | kept |
+| 2 | RF + month/ratio features + threshold 0.35 | 0.8879 | 0.9790 | kept |
+| 3 | GradientBoosting + features + threshold | 0.8397 | 0.9070 | discarded |
+| 4 | RF + auto-threshold CV-optimized F2 | 0.8955 | 0.9900 | kept |
+| 5 | RF+ExtraTrees ensemble + richer features + auto-threshold | 0.9015 | 1.0000 | best |
 
 ---
 
 ## Status
 
-Week 2 — baseline complete. Pipeline is stable and reproducible. F2 = 0.613306 confirmed identical across multiple runs. Test set locked. Runtime 0.01s per iteration.
+**Week 3** — first agent loop complete. Best F2 improved from 0.613 to 0.9015, exceeding the success criterion of 0.70. Recall hit 1.0 on validation set. Ablation study planned for Week 4 to confirm stability.
 
 See research_log.md for weekly notes and failure_log.md for experiments that did not work.
