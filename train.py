@@ -1,11 +1,9 @@
 """
 EDITABLE -- This is the only file the agent may modify.
-Baseline: Logistic Regression on claims features.
+Experiment 1: Random Forest with class_weight='balanced'.
 """
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
 
 def build_model():
     """
@@ -13,14 +11,14 @@ def build_model():
     Must expose a .predict(X) method.
     Agent may change anything in this file.
     """
-    model = Pipeline([
-        ("scaler", StandardScaler()),
-        ("classifier", LogisticRegression(
-            class_weight="balanced",
-            random_state=42,
-            max_iter=1000
-        ))
-    ])
+    model = RandomForestClassifier(
+        n_estimators=300,
+        class_weight="balanced",
+        max_depth=None,
+        min_samples_leaf=2,
+        random_state=42,
+        n_jobs=-1
+    )
     return model
 
 def preprocess(X):
