@@ -1,17 +1,18 @@
 """
 EDITABLE -- This is the only file the agent may modify.
-Experiment 5: RF + ExtraTrees soft-voting ensemble + auto-threshold + richer features.
+Experiment 9: Stacking (RF+ET base, LR meta) + auto-threshold + richer features.
 """
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
-from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, VotingClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, StackingClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import fbeta_score
 
 
 class AutoThresholdClassifier(BaseEstimator, ClassifierMixin):
-    """Fits an ensemble, picks the threshold that maximises OOF F2."""
+    """Fits a stacking classifier, picks the threshold that maximises OOF F2."""
 
     def __init__(self, base):
         self.base = base
@@ -53,20 +54,24 @@ def build_model():
     Returns a trained sklearn-compatible estimator.
     Must expose a .predict(X) method.
     """
-    rf = RandomForestClassifier(
-        n_estimators=200, class_weight="balanced",
-        min_samples_leaf=2, random_state=42, n_jobs=-1
-    )
-    et = ExtraTreesClassifier(
-        n_estimators=200, class_weight="balanced",
-        min_samples_leaf=2, random_state=0, n_jobs=-1
-    )
-    ensemble = VotingClassifier(
-        estimators=[("rf", rf), ("et", et)],
-        voting="soft",
+    estimators = [
+        ("rf", RandomForestClassifier(
+            n_estimators=300, class_weight="balanced",
+            min_samples_leaf=2, random_state=42, n_jobs=-1
+        )),
+        ("et", ExtraTreesClassifier(
+            n_estimators=300, class_weight="balanced",
+            min_samples_leaf=2, random_state=0, n_jobs=-1
+        )),
+    ]
+    stacker = StackingClassifier(
+        estimators=estimators,
+        final_estimator=LogisticRegression(class_weight="balanced", max_iter=1000, C=1.0),
+        cv=5,
+        stack_method="predict_proba",
         n_jobs=-1
     )
-    return AutoThresholdClassifier(base=ensemble)
+    return AutoThresholdClassifier(base=stacker)
 
 
 def preprocess(X):

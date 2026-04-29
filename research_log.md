@@ -47,3 +47,40 @@
 - Download Kaggle claims dataset
 - Write prepare.py to load data and compute F2 score
 - Run logistic regression baseline
+
+## Week 3 — April 2026
+
+**Goal:** Run first agent loop, complete 3 to 5 dry run experiments, document findings.
+
+**What I did:**
+- Launched Claude Code inside Cursor on the claims project
+- Let the agent run 5 experiments modifying only train.py
+- Monitored F2 score after each experiment via results.tsv
+
+**Experiment Results:**
+- Baseline: Logistic Regression — F2 0.6133
+- Exp 1: Random Forest 300 trees balanced — F2 0.7256 — KEPT
+- Exp 2: RF + month/ratio features + threshold 0.35 — F2 0.8879 — KEPT
+- Exp 3: GradientBoosting + features + threshold — F2 0.8397 — DISCARDED
+- Exp 4: RF + auto-threshold CV-optimized F2 — F2 0.8955 — KEPT
+- Exp 5: RF+ExtraTrees voting ensemble + richer features + auto-threshold — F2 0.9015 — BEST
+
+**What the agent did well:**
+- Immediately identified that switching from logistic regression to Random Forest was the biggest lever
+- Discovered that lowering the decision threshold significantly improved recall on denied claims
+- Found that adding month and billing ratio features added meaningful signal
+- CV-optimized threshold tuning in exp4 and exp5 was a smart move that paid off
+
+**What the agent did badly:**
+- GradientBoosting in exp3 was worse than Random Forest, wasting one experiment slot
+- Additional complexity beyond the RF+ET ensemble produced no improvement, suggesting the agent explored diminishing returns too early
+- Baseline was logged three times due to duplicate runs, creating noise in results.tsv
+
+**Current best:**
+- F2: 0.9015, Recall: 1.000, Precision: 0.647
+- Model: RF+ExtraTrees soft-voting ensemble with month/quarter extraction, billed-paid-allowed ratio features, and CV-optimized decision threshold
+
+**Next steps:**
+- Run ablation study to confirm which features and changes are actually driving the improvement
+- Lock scope and update program.md for Week 4 controlled experiments
+- Investigate whether recall of 1.0 is genuinely good or a sign of overfitting to validation set
