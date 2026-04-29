@@ -1,29 +1,61 @@
 """
 EDITABLE -- This is the only file the agent may modify.
-Experiment 2: Random Forest + feature engineering (month, ratios) + lower threshold.
+Experiment 4: RF + feature engineering + auto-threshold (CV-optimized F2).
 """
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator, ClassifierMixin
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import fbeta_score
 
-class ThresholdClassifier(BaseEstimator, ClassifierMixin):
-    """Wraps a classifier and applies a custom predict threshold."""
-    def __init__(self, base, threshold=0.35):
+
+class AutoThresholdClassifier(BaseEstimator, ClassifierMixin):
+    """Fits RF, then picks the threshold that maximises F2 on OOF predictions."""
+
+    def __init__(self, base):
         self.base = base
-        self.threshold = threshold
+        self.threshold_ = 0.5
 
     def fit(self, X, y):
+        # OOF probabilities to search for best F2 threshold
+        oof_proba = np.zeros(len(y))
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        for train_idx, val_idx in cv.split(X, y):
+            clf = RandomForestClassifier(
+                n_estimators=300,
+                class_weight="balanced",
+                min_samples_leaf=2,
+                random_state=42,
+                n_jobs=-1
+            )
+            clf.fit(X.iloc[train_idx] if hasattr(X, "iloc") else X[train_idx],
+                    y.iloc[train_idx] if hasattr(y, "iloc") else y[train_idx])
+            oof_proba[val_idx] = clf.predict_proba(
+                X.iloc[val_idx] if hasattr(X, "iloc") else X[val_idx]
+            )[:, 1]
+
+        # Search threshold in [0.05, 0.60] maximising F2
+        best_t, best_f2 = 0.5, -1.0
+        for t in np.linspace(0.05, 0.60, 56):
+            preds = (oof_proba >= t).astype(int)
+            f2 = fbeta_score(y, preds, beta=2, zero_division=0)
+            if f2 > best_f2:
+                best_f2, best_t = f2, t
+        self.threshold_ = best_t
+
+        # Retrain on full training set
         self.base.fit(X, y)
         self.classes_ = self.base.classes_
         return self
 
     def predict(self, X):
         proba = self.base.predict_proba(X)[:, 1]
-        return (proba >= self.threshold).astype(int)
+        return (proba >= self.threshold_).astype(int)
 
     def predict_proba(self, X):
         return self.base.predict_proba(X)
+
 
 def build_model():
     """
@@ -38,7 +70,8 @@ def build_model():
         random_state=42,
         n_jobs=-1
     )
-    return ThresholdClassifier(base=rf, threshold=0.35)
+    return AutoThresholdClassifier(base=rf)
+
 
 def preprocess(X):
     """
