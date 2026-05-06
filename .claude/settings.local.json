@@ -5,7 +5,10 @@
       "Bash(pip3 install *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(head -23 /Users/gloriettaarthoro/Desktop/390/insurance_autoresearch/results.tsv)",
+      "Bash(mv /tmp/results_trimmed.tsv /Users/gloriettaarthoro/Desktop/390/insurance_autoresearch/results.tsv)",
+      "Bash(git push *)"
     ]
   }
 }
