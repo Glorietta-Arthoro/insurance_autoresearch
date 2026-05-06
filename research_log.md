@@ -84,3 +84,37 @@
 - Run ablation study to confirm which features and changes are actually driving the improvement
 - Lock scope and update program.md for Week 4 controlled experiments
 - Investigate whether recall of 1.0 is genuinely good or a sign of overfitting to validation set
+
+## Week 4 — May 2026
+
+**Goal:** Run controlled ablation experiments, build experiment result matrix, metric plot, error taxonomy, and failure analysis memo.
+
+**What I did:**
+- Ran 7 controlled ablation experiments isolating one variable at a time
+- Built experiment result matrix mapping each experiment to its outcome
+- Generated metric over time plot showing F2 and recall across all runs
+- Wrote error taxonomy categorizing all failure types
+- Wrote one page failure analysis memo identifying the dominant failure mode
+
+**Ablation Results:**
+- Exp 1: Baseline LR — F2 0.6328
+- Exp 2: RF only — F2 0.7256
+- Exp 3: LR + features only — F2 0.5814 — DISCARDED (features hurt LR)
+- Exp 4: LR + threshold 0.35 only — F2 0.9015 — KEY FINDING
+- Exp 5: RF + auto-threshold only — F2 0.9015
+- Exp 6: RF + features only — F2 0.8301
+- Exp 7: Full model — F2 0.9015
+
+**Key finding:**
+Threshold tuning alone is the dominant driver of improvement. A plain logistic regression with threshold 0.35 hits exactly the same F2 as the full RF+ET stacking ensemble. All additional model complexity adds zero F2 benefit. The metric has effectively saturated on this 150-row validation set.
+
+**What I observed:**
+- Recall of 1.0 is likely an artifact of low threshold on a small validation set, not genuine generalization
+- Features hurt logistic regression but help Random Forest
+- The current evaluation setup cannot distinguish between model architectures once threshold tuning is active
+- Need to lock threshold or change metric before Week 5 overnight run
+
+**Next steps:**
+- Decide whether to lock threshold at 0.5 or change metric to precision at fixed recall
+- Update program.md with new constraints before Week 5
+- Run first real overnight autonomous block
