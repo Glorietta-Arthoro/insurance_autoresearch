@@ -11,7 +11,7 @@ Can an autonomous ML agent predict which insurance claims will be denied before 
 **Metric:** F2 score on the denied class (weights recall 2x over precision)
 **Data:** Kaggle synthetic healthcare claims dataset (1000 claims, 15 columns)
 **Target variable:** Outcome — Denied or Partially Paid = 1, Paid = 0
-**Current best F2:** 0.9015 (exp5: RF+ExtraTrees ensemble, auto-threshold, ratio features)
+**Current best F2:** 0.9015 (exp5: RF+ET ensemble, threshold locked at 0.5 from Week 5 onward)
 
 ---
 
@@ -56,21 +56,47 @@ One command returns a single F2 score. Runtime is approximately 0.01 seconds per
 
 ---
 
+## Weekly Status
+
+| Week | Goal | Status |
+|------|------|--------|
+| 1 | Project charter, research question, workflow diagram, risk list, repo structure | Complete |
+| 2 | Freeze evaluation pipeline, run reproducible baseline | Complete |
+| 3 | First agent loop, 5 dry run experiments | Complete |
+| 4 | Controlled ablation study, error taxonomy, failure memo | Complete |
+| 5 | First real overnight autonomous block, threshold locked at 0.5 | In Progress |
+| 6 | Ablation table, scope lock, final story | Pending |
+| 7 | Confirmation runs, final report draft | Pending |
+| 8 | Final presentation and retrospective | Pending |
+
+---
+
 ## Results Log
 
-| # | Description | F2 Score | Recall | Decision |
-|---|-------------|----------|--------|----------|
-| 0 | baseline: logistic regression | 0.6133 | 0.6082 | baseline |
-| 1 | Random Forest 300 trees balanced | 0.7256 | 0.7530 | kept |
-| 2 | RF + month/ratio features + threshold 0.35 | 0.8879 | 0.9790 | kept |
-| 3 | GradientBoosting + features + threshold | 0.8397 | 0.9070 | discarded |
-| 4 | RF + auto-threshold CV-optimized F2 | 0.8955 | 0.9900 | kept |
-| 5 | RF+ExtraTrees ensemble + richer features + auto-threshold | 0.9015 | 1.0000 | best |
+| # | Description | F2 | Recall | Status |
+|---|-------------|-----|--------|--------|
+| 1 | baseline: logistic regression | 0.6133 | 0.6082 | baseline |
+| 2 | exp1: random forest 300 trees balanced | 0.7256 | 0.7526 | keep |
+| 3 | exp2: RF + month/ratio features + threshold=0.35 | 0.8879 | 0.9794 | keep |
+| 4 | exp3: gradient boosting + features + threshold=0.35 | 0.8397 | 0.9072 | discard |
+| 5 | exp4: RF + features + auto-threshold CV F2 | 0.8955 | 0.9897 | keep |
+| 6 | exp5: RF+ET voting ensemble + richer features + auto-threshold | 0.9015 | 1.0000 | keep |
+| 7 | exp6: HistGradientBoosting + richer features + auto-threshold | 0.8939 | 0.9897 | discard |
+| 8 | exp7: RF+ET ensemble + log transforms + OHE + auto-threshold | 0.9015 | 1.0000 | discard |
+| 9 | exp8: RF+ET ensemble + SMOTE + auto-threshold | 0.8895 | 0.9794 | discard |
+| 10 | exp9: stacking RF+ET base LR meta + auto-threshold | 0.9015 | 1.0000 | discard |
+| 11 | ablation: baseline logistic regression | 0.6328 | 0.6289 | baseline |
+| 12 | ablation: random forest only | 0.7256 | 0.7526 | keep |
+| 13 | ablation: LR + month/ratio features only | 0.5814 | 0.5670 | discard |
+| 14 | ablation: LR + threshold 0.35 only | 0.9015 | 1.0000 | keep |
+| 15 | ablation: RF + auto-threshold only | 0.9015 | 1.0000 | keep |
+| 16 | ablation: RF + features only | 0.8301 | 0.8866 | keep |
+| 17 | ablation: full best model | 0.9015 | 1.0000 | keep |
 
 ---
 
 ## Status
 
-**Week 3** — first agent loop complete. Best F2 improved from 0.613 to 0.9015, exceeding the success criterion of 0.70. Recall hit 1.0 on validation set. Ablation study planned for Week 4 to confirm stability.
+**Week 5 prep complete.** Threshold locked at 0.5, results.tsv cleaned, run.py updated with sequential experiment numbering. Ready for first overnight autonomous block.
 
 See research_log.md for weekly notes and failure_log.md for experiments that did not work.

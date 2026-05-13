@@ -118,3 +118,18 @@ Threshold tuning alone is the dominant driver of improvement. A plain logistic r
 - Decide whether to lock threshold at 0.5 or change metric to precision at fixed recall
 - Update program.md with new constraints before Week 5
 - Run first real overnight autonomous block
+
+## Week 5 Prep — May 2026
+
+**Changes made before Week 5 agent run:**
+
+**Threshold locked at 0.5** — Week 4 ablation showed threshold tuning alone was driving all F2 improvement. A plain logistic regression with threshold 0.35 matched the full RF+ET ensemble exactly. To make the metric sensitive to genuine model improvement again the threshold is now locked at 0.5 in program.md. The agent is explicitly forbidden from tuning it.
+
+**Web search added to agent instructions** — Updated program.md to instruct the agent to search for literature on healthcare claims denial prediction features before proposing experiments. This gives the agent domain knowledge about which variable interactions are worth testing rather than exploring blindly.
+
+**results.tsv cleaned and fixed** — Corrected discard status on experiments that were reverted in git but logged as keep. Removed duplicate baseline rows. Replaced git hash experiment IDs with clean sequential numbers. run.py updated to auto-increment experiment numbers going forward.
+
+**Next steps for Week 5:**
+- Run first real overnight autonomous agent block with locked threshold
+- Agent should explore genuine model improvements, feature interactions, and new encoding strategies
+- Target is to beat F2 of 0.7256 (RF only, no threshold tricks) with threshold locked at 0.5

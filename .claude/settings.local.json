@@ -8,7 +8,9 @@
       "Bash(git checkout *)",
       "Bash(head -23 /Users/gloriettaarthoro/Desktop/390/insurance_autoresearch/results.tsv)",
       "Bash(mv /tmp/results_trimmed.tsv /Users/gloriettaarthoro/Desktop/390/insurance_autoresearch/results.tsv)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ]
   }
 }
