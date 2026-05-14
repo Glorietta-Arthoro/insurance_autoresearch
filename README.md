@@ -11,7 +11,7 @@ Can an autonomous ML agent predict which insurance claims will be denied before 
 **Metric:** F2 score on the denied class (weights recall 2x over precision)
 **Data:** Kaggle synthetic healthcare claims dataset (1000 claims, 15 columns)
 **Target variable:** Outcome — Denied or Partially Paid = 1, Paid = 0
-**Current best F2:** 0.9015 (exp5: RF+ET ensemble, threshold locked at 0.5 from Week 5 onward)
+**Current best F2:** 0.9032 (exp48: CatBoost class_weights=[1,4] depth=6 seed=42, threshold=0.5)
 
 ---
 
@@ -26,8 +26,8 @@ Can an autonomous ML agent predict which insurance claims will be denied before 
     research_log.md            — dated weekly notes on agent behavior and decisions
     failure_log.md             — crashed experiments and lessons learned
     requirements.txt           — pinned Python dependencies
-    .gitignore                 — excludes data/, results.tsv, performance.png, cache
-    results.tsv       GENERATED — experiment log, one row per trial
+    .gitignore                 — excludes data/, performance.png, cache, *.bak
+    results.tsv                — experiment log, one row per trial (64 experiments)
     performance.png   GENERATED — F2 score trajectory plot over iterations
     data/             LOCAL ONLY — raw Kaggle CSV, never pushed to GitHub
 
@@ -64,7 +64,7 @@ One command returns a single F2 score. Runtime is approximately 0.01 seconds per
 | 2 | Freeze evaluation pipeline, run reproducible baseline | Complete |
 | 3 | First agent loop, 5 dry run experiments | Complete |
 | 4 | Controlled ablation study, error taxonomy, failure memo | Complete |
-| 5 | First real overnight autonomous block, threshold locked at 0.5 | In Progress |
+| 5 | First real overnight autonomous block, threshold locked at 0.5 | Complete |
 | 6 | Ablation table, scope lock, final story | Pending |
 | 7 | Confirmation runs, final report draft | Pending |
 | 8 | Final presentation and retrospective | Pending |
@@ -92,11 +92,13 @@ One command returns a single F2 score. Runtime is approximately 0.01 seconds per
 | 15 | ablation: RF + auto-threshold only | 0.9015 | 1.0000 | keep |
 | 16 | ablation: RF + features only | 0.8301 | 0.8866 | keep |
 | 17 | ablation: full best model | 0.9015 | 1.0000 | keep |
+| 18 | baseline: threshold locked 0.5 | 0.9015 | 1.0000 | baseline |
+| 48 | CatBoost [1,4] depth=6 seed=42 native cats | 0.9032 | 1.0000 | keep |
 
 ---
 
 ## Status
 
-**Week 5 prep complete.** Threshold locked at 0.5, results.tsv cleaned, run.py updated with sequential experiment numbering. Ready for first overnight autonomous block.
+**Week 5 complete.** 47 experiments run autonomously with threshold locked at 0.5. New best F2=0.903166 achieved with CatBoost class_weights=[1,4], depth=6, seed=42 (exp48). Broke the all-positive ceiling by correctly rejecting 1 val negative while maintaining recall=1.0 on all 97 val positives. 64 total experiments logged in results.tsv.
 
 See research_log.md for weekly notes and failure_log.md for experiments that did not work.

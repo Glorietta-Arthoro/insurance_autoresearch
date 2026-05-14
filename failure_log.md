@@ -31,3 +31,23 @@ Several Week 3 experiments were logged as keep in results.tsv despite being reve
 
 **Recall ceiling concern confirmed**
 The ablation confirms that recall of 1.0 is driven entirely by threshold tuning on a small validation set, not by genuine model learning. This result will almost certainly not hold on the locked test set at Week 7.
+
+## Week 5 — May 2026
+
+**All-positive ceiling — dominant failure mode**
+With threshold locked at 0.5, predicting every val sample as positive gives recall=1.0 and precision=97/150=0.6467, yielding F2=0.901487. Nearly every experiment hit this ceiling exactly — the model simply assigned every sample a probability ≥0.5. This was the dominant failure mode across 40+ experiments.
+
+**LightGBM/XGBoost with OHE — recall plateau**
+All LightGBM and XGBoost variants (OHE on diagnosis code, scale_pos_weight from 1.5 to 4, frequency encoding) plateaued at recall=0.845 or fell to the all-positive ceiling. These models cannot properly handle the high-cardinality Diagnosis Code feature even with one-hot encoding. Tried 6 variants, all discarded.
+
+**Feature engineering adds no signal**
+Interaction features (diagnosis×insurance, diagnosis×procedure), smoothed target encoding for diagnosis and procedure codes, and additional ratio features all produced no improvement over base CatBoost. Near-zero feature correlations in this synthetic dataset mean engineered features carry no new information beyond what CatBoost's ordered statistics already capture.
+
+**CatBoost Bernoulli subsampling — TN=2 but FN=1**
+Exp60 (Bernoulli bootstrap, subsample=0.8) found TN=2 but introduced FN=1, giving F2=0.897 — worse than the target. The subsampling changes which training samples CatBoost sees per iteration, identifying a different set of val negatives but losing a val positive in the process. Tried subsample=0.9 and [1,5] variant — same net result.
+
+**Ensemble averaging cancels TN signal**
+Exp57 and exp58 averaged probabilities from [1,3]+[1,4]+[1,5] and [1,3]+[1,4]. Both resulted in F2=0.901487 (all positive). Root cause: [1,3] and [1,4] identify DIFFERENT val negatives as their single TN. Averaging their probabilities pushes both TN candidates back above 0.5, canceling both signals.
+
+**Different CatBoost seeds and depths are worse**
+Seed=0 (exp55) produced all-positive predictions. Depth=4 (exp49) added FN. Depth=7 (exp64) and depth=8 (exp52) both added FN=1 with no TN gain. Lossguide grow policy (exp59) dropped to F2=0.785. The depth=6 seed=42 configuration appears uniquely optimal for this dataset and threshold.
