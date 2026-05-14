@@ -10,7 +10,18 @@
       "Bash(mv /tmp/results_trimmed.tsv /Users/gloriettaarthoro/Desktop/390/insurance_autoresearch/results.tsv)",
       "Bash(git push *)",
       "Bash(git pull *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "WebSearch",
+      "Bash(brew --version)",
+      "Bash(conda env *)",
+      "Read(//opt/anaconda3/envs/**)",
+      "Bash(/opt/anaconda3/envs/tf-mnist/bin/python --version)",
+      "Bash(/opt/anaconda3/envs/tf-mnist/bin/python -c \"import numpy; print\\('numpy', numpy.__version__\\); import sklearn; print\\('sklearn ok'\\)\")",
+      "Bash(/opt/anaconda3/envs/tf-mnist/bin/python *)",
+      "Bash(pip3 list *)",
+      "Bash(/opt/anaconda3/envs/tf-mnist/bin/pip install *)",
+      "Bash(pip3 show *)",
+      "Bash(conda run *)"
     ]
   }
 }
