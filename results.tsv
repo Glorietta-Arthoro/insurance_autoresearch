@@ -1,0 +1,66 @@
+experiment	val_f2	val_recall	val_precision	runtime_sec	status	description
+1	0.613306	0.608247	0.634409	0.01	baseline	baseline: logistic regression
+2	0.725646	0.752577	0.634783	0.36	keep	exp1: random forest 300 trees balanced
+3	0.887850	0.979381	0.646259	0.21	keep	exp2: RF + month/ratio features + threshold=0.35
+4	0.839695	0.907216	0.647059	0.32	discard	exp3: gradient boosting + features + threshold=0.35
+5	0.895522	0.989691	0.648649	1.39	keep	exp4: RF + features + auto-threshold CV F2
+6	0.901487	1.000000	0.646667	5.69	keep	exp5: RF+ET voting ensemble + richer features + auto-threshold
+7	0.893855	0.989691	0.644295	3.45	discard	exp6: HistGradientBoosting + richer features + auto-threshold
+8	0.901487	1.000000	0.646667	7.09	discard	exp7: RF+ET ensemble + log transforms + OHE + auto-threshold
+9	0.889513	0.979381	0.650685	6.58	discard	exp8: RF+ET ensemble + SMOTE + auto-threshold
+10	0.901487	1.000000	0.646667	13.39	discard	exp9: stacking RF+ET base LR meta + auto-threshold
+11	0.632780	0.628866	0.648936	0.01	baseline	ablation: baseline logistic regression
+12	0.725646	0.752577	0.634783	0.20	keep	ablation: random forest only
+13	0.581395	0.567010	0.647059	0.02	discard	ablation: LR + month/ratio features only
+14	0.901487	1.000000	0.646667	0.01	keep	ablation: LR + threshold 0.35 only
+15	0.901487	1.000000	0.646667	1.36	keep	ablation: RF + auto-threshold only
+16	0.830116	0.886598	0.661538	0.21	keep	ablation: RF + features only
+17	0.901487	1.000000	0.646667	14.01	keep	ablation: full best model
+18	0.901487	1.000000	0.646667	12.99	baseline	baseline: threshold locked 0.5
+
+19	0.901487	1.000000	0.646667	15.07	baseline	baseline: threshold locked 0.5
+20	0.901487	1.000000	0.646667	1.41	keep	exp10: target encoding diag/proc codes + RF + auto-threshold
+21	0.893855	0.989691	0.644295	3.56	keep	exp11: HistGBM + target encoding + auto-threshold
+22	0.893855	0.989691	0.644295	3.83	discard	exp11: HistGBM + target encoding
+23	0.901487	1.000000	0.646667	7.84	keep	exp12: HistGBM native categoricals + day_of_week + auto-threshold
+24	0.901487	1.000000	0.646667	0.98	keep	exp13: GradientBoostingClassifier + freq encoding + auto-threshold
+25	0.901487	1.000000	0.646667	13.57	keep	exp14: stacking + target enc + ins×proc interaction + auto-threshold
+26	0.792079	0.824742	0.683761	0.22	keep	exp15: GradientBoosting 500 trees threshold=0.5
+27	0.792079	0.824742	0.683761	0.24	baseline	baseline: threshold locked 0.5
+28	0.901487	1.000000	0.646667	13.32	discard	XGBoost scale_pos_weight=0.55 frequency encoding
+29	0.652174	0.649485	0.663158	0.60	keep	HistGradientBoostingClassifier class_weight=balanced threshold=0.5
+30	0.901487	1.000000	0.646667	13.50	discard	HistGradientBoostingClassifier class_weight=balanced threshold=0.5
+31	0.901487	1.000000	0.646667	12.75	baseline	baseline: threshold locked 0.5
+32	0.732673	0.762887	0.632479	0.30	discard	RF class_weight 0:0.5 1:1 threshold=0.5
+33	0.901487	1.000000	0.646667	13.65	baseline	baseline: threshold locked 0.5
+34	0.758483	0.783505	0.672566	0.11	discard	XGBoost no class weight freq encoding threshold=0.5
+35	0.842912	0.907216	0.656716	0.75	discard	CatBoost native cat_features ordinal encoding no class weight
+36	0.694165	0.711340	0.633028	0.38	discard	LightGBM + smoothed target encoding diag/proc codes no class weight
+37	0.885122	0.969072	0.657343	0.70	discard	CatBoost class_weights=[1,2] mild positive bias native cat features
+38	0.658436	0.659794	0.653061	0.38	discard	LightGBM balanced + smoothed target encoding diag/proc codes smoothing=5
+39	0.728543	0.752577	0.646018	0.40	discard	RF balanced + in-pipeline smoothed TE diag/proc codes smoothing=3
+40	0.901487	1.000000	0.646667	0.67	discard	CatBoost class_weights=[1,5] strong positive bias native cat features
+41	0.836538	0.896907	0.659091	0.25	discard	ExtraTrees no class weight 500 trees frequency encoding
+42	0.901487	1.000000	0.646667	0.06	discard	MLP 128-64-32 StandardScaler early stopping frequency encoding
+43	0.763889	0.793814	0.663793	0.71	discard	LightGBM pipeline OHE diagnosis code per-code binary features no class weight
+44	0.802348	0.845361	0.666667	0.64	discard	LightGBM OHE diag code scale_pos_weight=1.5 mild positive bias
+45	0.799220	0.845361	0.656000	0.62	discard	LightGBM OHE diag code scale_pos_weight=2.5 mild positive bias
+46	0.838095	0.907216	0.642336	0.00	discard	DiagCode denial rate lookup smoothing=3 threshold=0.5
+47	0.887850	0.979381	0.646259	0.76	discard	CatBoost class_weights=[1,3] native cat features threshold=0.5
+48	0.903166	1.000000	0.651007	0.74	keep	CatBoost class_weights=[1,4] native cat features threshold=0.5
+49	0.886194	0.979381	0.641892	0.52	discard	CatBoost class_weights=[1,4] depth=4 shallower trees threshold=0.5
+50	0.822050	0.876289	0.658915	0.30	discard	XGBoost OHE diag code scale_pos_weight=4 threshold=0.5
+51	0.864662	0.948454	0.638889	0.70	discard	CatBoost class_weights=[1,4] l2_leaf_reg=0.5 depth=6 threshold=0.5
+52	0.895522	0.989691	0.648649	1.23	discard	CatBoost class_weights=[1,4] depth=8 deeper trees threshold=0.5
+53	0.794118	0.835052	0.663934	0.59	discard	LightGBM enable_categorical native cats scale_pos_weight=4 threshold=0.5
+54	0.886194	0.979381	0.641892	0.91	discard	CatBoost [1,4] + diag x insurance + diag x proc interaction cats
+55	0.901487	1.000000	0.646667	0.70	discard	CatBoost [1,4] depth=6 random_seed=0 different permutation
+56	0.818882	0.876289	0.648855	0.74	discard	HistGBM class_weight={0:1,1:4} ordinal encoding native categoricals
+57	0.901487	1.000000	0.646667	2.03	discard	CatBoost soft-vote ensemble weights [1,3]+[1,4]+[1,5] avg prob
+58	0.901487	1.000000	0.646667	1.37	discard	CatBoost soft-vote ensemble [1,3]+[1,4] averaged probabilities
+59	0.784884	0.835052	0.632812	4.40	discard	CatBoost [1,4] grow_policy=Lossguide leaf-wise growth max_leaves=63
+60	0.897196	0.989691	0.653061	0.74	discard	CatBoost [1,4] Bernoulli bootstrap subsample=0.8 depth=6
+61	0.893855	0.989691	0.644295	0.74	discard	CatBoost [1,5] Bernoulli subsample=0.8 depth=6 targeting TN=2 FN=0
+62	0.872420	0.958763	0.641379	0.73	discard	CatBoost [1,4] Bernoulli subsample=0.9 depth=6 seeking TN=2 FN=0
+63	0.880150	0.969072	0.643836	0.37	discard	CatBoost [1,4] one_hot_max_size=200 OHE categorical features
+64	0.893855	0.989691	0.644295	0.90	discard	CatBoost [1,4] depth=7 between depth=6 best and depth=8 worse
